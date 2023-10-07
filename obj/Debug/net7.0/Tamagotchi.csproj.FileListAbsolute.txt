@@ -1,0 +1,15 @@
+/Users/felipekcamargo/Documents/Tamagotchi/bin/Debug/net7.0/Tamagotchi
+/Users/felipekcamargo/Documents/Tamagotchi/bin/Debug/net7.0/Tamagotchi.deps.json
+/Users/felipekcamargo/Documents/Tamagotchi/bin/Debug/net7.0/Tamagotchi.runtimeconfig.json
+/Users/felipekcamargo/Documents/Tamagotchi/bin/Debug/net7.0/Tamagotchi.dll
+/Users/felipekcamargo/Documents/Tamagotchi/bin/Debug/net7.0/Tamagotchi.pdb
+/Users/felipekcamargo/Documents/Tamagotchi/obj/Debug/net7.0/Tamagotchi.csproj.AssemblyReference.cache
+/Users/felipekcamargo/Documents/Tamagotchi/obj/Debug/net7.0/Tamagotchi.GeneratedMSBuildEditorConfig.editorconfig
+/Users/felipekcamargo/Documents/Tamagotchi/obj/Debug/net7.0/Tamagotchi.AssemblyInfoInputs.cache
+/Users/felipekcamargo/Documents/Tamagotchi/obj/Debug/net7.0/Tamagotchi.AssemblyInfo.cs
+/Users/felipekcamargo/Documents/Tamagotchi/obj/Debug/net7.0/Tamagotchi.csproj.CoreCompileInputs.cache
+/Users/felipekcamargo/Documents/Tamagotchi/obj/Debug/net7.0/Tamagotchi.dll
+/Users/felipekcamargo/Documents/Tamagotchi/obj/Debug/net7.0/refint/Tamagotchi.dll
+/Users/felipekcamargo/Documents/Tamagotchi/obj/Debug/net7.0/Tamagotchi.pdb
+/Users/felipekcamargo/Documents/Tamagotchi/obj/Debug/net7.0/Tamagotchi.genruntimeconfig.cache
+/Users/felipekcamargo/Documents/Tamagotchi/obj/Debug/net7.0/ref/Tamagotchi.dll
