@@ -29,7 +29,7 @@ namespace ConsoleOptions
         public PokemonOption(string? nameOrId)
         {
             ValidateInput(nameOrId);
-            _nameOrId = nameOrId;
+            _nameOrId = nameOrId!;
         }
 
         public string GetValue() => _nameOrId;
