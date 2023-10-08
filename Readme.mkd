@@ -1,16 +1,6 @@
-URL para consultar os pokemons GET https://pokeapi.co/api/v2/pokemon/ 
+## 7 Days of Code Alura
 
-Criar o código C# que executará uma requisição HTTP do tipo GET.
-Executar a requisição e pegar a resposta (o JSON)
-Imprimir o resultado no console
+ ### Tamagotchi Pokemon
 
 
-Simples, não? Nesse exercício, eu recomendo a utilização do pacote Rest Sharp, mas você pode escolher qualquer outro. Para esse início, se for confortável, faça tudo na Main mesmo! Posteriormente, vou te guiar na evolução desse código, para que ele seja mais maleável, orientado a objetos, e para te gerar algumas reflexões também.
-
-Ele vai ficar com uma cara mais ou menos assim:
-
-``
-var client = new RestClient(URL_DA_API);
-var request = new RestRequest(Method.GET);
-// execução do método GET
-``
+ WIP
