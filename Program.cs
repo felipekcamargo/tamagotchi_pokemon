@@ -1,5 +1,6 @@
 ﻿using client.PokemonClient;
-using ConsoleOptions;
+using contracts.ConsoleOptions;
+using contracts.Pokemon;
 using System.Text.Json;
 
 namespace HelloWorld
@@ -41,7 +42,12 @@ namespace HelloWorld
         {
             string nameOrId = GetPokemonNameOrIdFromUser();
             var pokemon = await pokemonClient.GetPokemon(nameOrId);
-            Console.WriteLine(pokemon);
+            Console.WriteLine($"Name: {pokemon.Name}");
+            Console.WriteLine($"Height: {pokemon.Height}");
+            Console.WriteLine($"Weight: {pokemon.Weight}");
+            Console.WriteLine("Habilities");
+            foreach(var abilityData in pokemon.Abilities)
+                Console.WriteLine(abilityData.Ability.Name);
         }
 
         private static string GetPokemonNameOrIdFromUser()

@@ -1,11 +1,12 @@
 using System.Net.Http.Json;
 using contracts.Pokemons;
+using contracts.Pokemon;
 
 namespace client.PokemonClient
 {
     public interface IPokemonClient
     {
-        Task<string> GetPokemon(string nameOrId);
+        Task<Pokemon?> GetPokemon(string nameOrId);
         Task<Pokemons?> GetPokemons();
     }
 
@@ -19,11 +20,11 @@ namespace client.PokemonClient
             _httpClient = new HttpClient();
         }
 
-        public async Task<string> GetPokemon(string nameOrId) //TODO: Arrumar o contrato
+        public async Task<Pokemon?> GetPokemon(string nameOrId) //TODO: Arrumar o contrato
         {
             var response = await _httpClient.GetAsync(_basePokeUrl + nameOrId);
             response.EnsureSuccessStatusCode();
-            var pokemon = await response.Content.ReadAsStringAsync();
+            var pokemon = await response.Content.ReadFromJsonAsync<Pokemon>();
             return pokemon;
         }
 

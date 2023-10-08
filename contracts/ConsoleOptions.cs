@@ -1,4 +1,4 @@
-namespace ConsoleOptions
+namespace contracts.ConsoleOptions
 {
     class MainMenuOptions
     {
