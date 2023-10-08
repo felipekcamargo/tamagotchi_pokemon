@@ -1,6 +1,6 @@
 ﻿using client.PokemonClient;
 using contracts.ConsoleOptions;
-using contracts.Pokemon;
+using service.PokemonService;
 using System.Text.Json;
 
 namespace HelloWorld
@@ -14,7 +14,7 @@ namespace HelloWorld
 
         private static async Task ShowPokemons()
         {
-            var pokemonClient = new PokemonClient();
+            var pokemonService = new PokemonService(new PokemonClient());
 
             try
             {
@@ -22,10 +22,10 @@ namespace HelloWorld
                 switch (selectedOption)
                 {
                     case 1:
-                        await ShowAllPokemonsPaged(pokemonClient);
+                        await ShowAllPokemonsPaged(pokemonService);
                         break;
                     case 2:
-                        await ShowPokemonInfo(pokemonClient);
+                        await ShowPokemonInfoAsync(pokemonService);
                         break;
                     default:
                         Console.WriteLine("Invalid option");
@@ -38,29 +38,39 @@ namespace HelloWorld
             }
         }
 
-        private static async Task ShowPokemonInfo(PokemonClient pokemonClient)
+        private static async Task ShowPokemonInfoAsync(IPokemonService pokemonService)
         {
             string nameOrId = GetPokemonNameOrIdFromUser();
-            var pokemon = await pokemonClient.GetPokemon(nameOrId);
+            var pokemon = await pokemonService.GetPokemonAsync(nameOrId);
+            Console.Clear();
             Console.WriteLine($"Name: {pokemon.Name}");
             Console.WriteLine($"Height: {pokemon.Height}");
             Console.WriteLine($"Weight: {pokemon.Weight}");
-            Console.WriteLine("Habilities");
+            Console.WriteLine("Abilities");
             foreach(var abilityData in pokemon.Abilities)
-                Console.WriteLine(abilityData.Ability.Name);
+                Console.WriteLine($" {abilityData.Ability.Name}");
         }
 
         private static string GetPokemonNameOrIdFromUser()
         {
             Console.Write("Please provide Pokemon name or Id: ");
-            var nameOrId = new PokemonOption(Console.ReadLine());
-            return nameOrId.GetValue();
+            var nameOrId = new PokemonOption(Console.ReadLine()).GetValue();
+            return nameOrId;
         }
 
-        private static async Task ShowAllPokemonsPaged(PokemonClient pokemonClient)
+        private static async Task ShowAllPokemonsPaged(IPokemonService pokemonService)
         {
-            var pokemons = await pokemonClient.GetPokemons();
-            Console.WriteLine(JsonSerializer.Serialize(pokemons));
+            var page = 0;
+            bool shouldContinue;
+            do
+            {
+                var pokemons = await pokemonService.GetAllPokemonsPagedAsync(page);
+                Console.WriteLine(JsonSerializer.Serialize(pokemons));
+                Console.WriteLine($"\nPage {page + 1}");
+                Console.Write("\nShow next page? [Y,n] ");
+                shouldContinue = new YesOrNo(Console.ReadLine()).GetValue();
+                page++;
+            } while (shouldContinue);
         }
 
         private static int GetOptionFromUser()

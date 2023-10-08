@@ -7,7 +7,7 @@ namespace client.PokemonClient
     public interface IPokemonClient
     {
         Task<Pokemon?> GetPokemon(string nameOrId);
-        Task<Pokemons?> GetPokemons();
+        Task<Pokemons?> GetPokemons(int offset = 0, int limit = 20);
     }
 
     public class PokemonClient : IPokemonClient
@@ -20,7 +20,7 @@ namespace client.PokemonClient
             _httpClient = new HttpClient();
         }
 
-        public async Task<Pokemon?> GetPokemon(string nameOrId) //TODO: Arrumar o contrato
+        public async Task<Pokemon?> GetPokemon(string nameOrId)
         {
             var response = await _httpClient.GetAsync(_basePokeUrl + nameOrId);
             response.EnsureSuccessStatusCode();
@@ -28,9 +28,9 @@ namespace client.PokemonClient
             return pokemon;
         }
 
-        public async Task<Pokemons?> GetPokemons()
-        {
-            var response = await _httpClient.GetAsync(_basePokeUrl);
+        public async Task<Pokemons?> GetPokemons(int offset = 0, int limit = 20)
+        {            
+            var response = await _httpClient.GetAsync(_basePokeUrl+ $"?offset={offset}&limit={limit}");
             response.EnsureSuccessStatusCode();
             var pokemons = await response.Content.ReadFromJsonAsync<Pokemons>();
             return pokemons;
