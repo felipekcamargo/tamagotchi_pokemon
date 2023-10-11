@@ -4,22 +4,30 @@ namespace contracts.ConsoleOptions
 {
     class MainMenuOptions
     {
-        private int _selectedOption { get; set; }
-        private readonly int[] _availableOptions = { 1, 2 };
+        private int SelectedOption { get; set; }
+        public static readonly Dictionary<int, string> availableOptions = new()
+        {
+            {1, "Show all Pokémons available"},
+            {2, "Pokemon info"},
+            {3, "Adopt a Pokémon"},
+            {4, "Show all adopted Pokémons"},
+            {5, "Exit" }
+        };
+
         public MainMenuOptions(string? selectedOption)
         {
             if (!int.TryParse(selectedOption, out var parsedSelectedOption))
                 throw new Exception("Invalid input");
 
             ValidateOptions(parsedSelectedOption);
-            _selectedOption = parsedSelectedOption;
+            SelectedOption = parsedSelectedOption;
         }
 
-        public int GetValue() => _selectedOption;
+        public int GetValue() => SelectedOption;
 
         private void ValidateOptions(int parsedSelectedOption)
         {
-            if (!_availableOptions.Contains(parsedSelectedOption))
+            if (!availableOptions.ContainsKey(parsedSelectedOption))
                 throw new Exception("Option not supported");
         }
 

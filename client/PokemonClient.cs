@@ -12,13 +12,8 @@ namespace client.PokemonClient
 
     public class PokemonClient : IPokemonClient
     {
-        private readonly HttpClient _httpClient;
+        private readonly HttpClient _httpClient = new();
         private const string _basePokeUrl = "https://pokeapi.co/api/v2/pokemon/";
-
-        public PokemonClient()
-        {
-            _httpClient = new HttpClient();
-        }
 
         public async Task<Pokemon?> GetPokemon(string nameOrId)
         {
