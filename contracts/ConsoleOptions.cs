@@ -12,13 +12,10 @@ namespace contracts
             {3, "Exit" }
         };
 
-        public MainMenuOptions(string? selectedOption)
+        public MainMenuOptions(int selectedOption)
         {
-            if (!int.TryParse(selectedOption, out var parsedSelectedOption))
-                throw new Exception("Invalid input");
-
-            ValidateOptions(parsedSelectedOption);
-            SelectedOption = parsedSelectedOption;
+            ValidateOptions(selectedOption);
+            SelectedOption = selectedOption;
         }
 
         public int GetValue() => SelectedOption;

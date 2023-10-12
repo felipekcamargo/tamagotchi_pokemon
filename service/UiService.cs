@@ -1,4 +1,3 @@
-using System.Text.Json;
 using client;
 using contracts;
 using static contracts.MainMenuOptions;
@@ -10,7 +9,7 @@ namespace service
     {
         public void GetUserName();
         public int MainMenuOptions();
-        public Task AdoptPokemon();
+        public Task AdoptAPokemon();
         public void ShowAdoptedPokemons();
     }
 
@@ -33,16 +32,9 @@ namespace service
 
         public int MainMenuOptions()
         {
-            Console.Clear();
-            Console.WriteLine("---------------------- MENU ----------------------");
-            Console.WriteLine($"\n{_userName}, what you want to do?\n");
-            foreach (var option in availableOptions)
-                Console.WriteLine($"{option.Key} - {option.Value}");
+            var selectedOption = new MainMenuOptions(ShowMenuAndGetUserOption("Menu", $"{_userName}, what you want to do?", availableOptions));
 
-            Console.Write("Option: ");
-            var actionOption = new MainMenuOptions(Console.ReadLine());
-            Console.Clear();
-            return actionOption.GetValue();
+            return selectedOption.GetValue();
         }
 
         public static void ShowGameName()
@@ -58,70 +50,85 @@ namespace service
 ");
         }
 
-        public async Task AdoptPokemon()
+        public async Task AdoptAPokemon()
         {
-            Console.Clear();
-            Console.WriteLine("---------------------- ADOPT A POKÉMON ----------------------");
-            Console.WriteLine("Select a Pokémon:");
+            var availablePokemons = await GetAvailablePokemons();
+            var selectedPokemon = ShowMenuAndGetUserOption("Adopt a Pokémon", "Select a Pokémon:", availablePokemons);
+            var selectedPokemonName = availablePokemons[selectedPokemon];
+            await AdoptionOptions(selectedPokemonName);
+        }
+
+        private async Task AdoptionOptions(string pokemonName)
+        {
+            var adoptionOptions = new Dictionary<int, string>{
+                {1,$"More info about {pokemonName}"},
+                {2,$"Adopt {pokemonName}"},
+                {3,"Back"},
+            };
+
+            var selectedOption = ShowMenuAndGetUserOption(
+                "Adoption Options",
+                $"{_userName}, what you want to do?",
+                adoptionOptions
+            );
+
+            switch (selectedOption)
+            {
+                case 1:
+                    await ShowPokemonInfoAsync(pokemonName);
+                    await AdoptionOptions(pokemonName);
+                    break;
+                case 2:
+                    AdoptedPokemonMessage(pokemonName);
+                    _adoptedPokemons.Add(pokemonName);
+                    break;
+                case 3:
+                    break;
+            }
+        }
+
+        private async Task<Dictionary<int, string>> GetAvailablePokemons()
+        {
             int randomPage = new Random().Next(63);
             var pokemons = await _pokemonService.GetAllPokemonsPagedAsync(randomPage);
+            var pokemonsAvailable = new Dictionary<int, string>();
+
             for (int index = 0; index < 3; index++)
             {
                 int randomPokemon = new Random().Next(19);
-                Console.WriteLine($" {pokemons.Results[randomPokemon].Name}");
+                pokemonsAvailable.Add(index + 1, pokemons!.Results![randomPokemon].Name!);
             }
-            Console.Write("Selected Pokémon: ");
-            var selectedPokemon = Console.ReadLine();
 
-            Console.WriteLine("\n\n -------------------------------------------------------------");
-            Console.WriteLine($"\n {_userName}, what you want to do?");
-            Console.WriteLine($"1 - More info about {selectedPokemon}");
-            Console.WriteLine($"2 - Adopt {selectedPokemon}");
-            Console.WriteLine($"3 - Back");
-
-            var selectedOption = Console.ReadLine();
-            int.TryParse(selectedOption, out int selectedOptionParsed);
-
-            switch (selectedOptionParsed)
-            {
-                case 1:
-                    await ShowPokemonInfoAsync(selectedPokemon);
-                    break;
-                case 2:
-                    Console.WriteLine($" {selectedPokemon} adopted!");
-                    _adoptedPokemons.Add(selectedPokemon);
-                    break;
-                case 3:
-                    await AdoptPokemon();
-                    break;
-            }
+            return pokemonsAvailable;
         }
 
         public void ShowAdoptedPokemons()
         {
-            if (_adoptedPokemons.Count == 0)
-                throw new Exception("There is no pokémon selected");
-
-            Console.WriteLine("---------------------- ADOPTED A POKÉMONS ----------------------");
-            foreach (var pokemon in _adoptedPokemons)
-            {
-                Console.WriteLine(pokemon);
+            if (_adoptedPokemons.Count == 0){
+                Console.WriteLine("\n\nThere is no Pokémon adopted\n\n");
+                return;
             }
+
+            Console.WriteLine("\n\n---------------------- ADOPTED A POKÉMONS ----------------------\n\n");
+            foreach (var pokemon in _adoptedPokemons)
+                Console.WriteLine(pokemon);
+            
         }
 
-        private async Task ShowAllPokemonsPaged()
+        private static void AdoptedPokemonMessage(string selectedPokemon)
         {
-            var page = 0;
-            bool shouldContinue;
-            do
-            {
-                var pokemons = await _pokemonService.GetAllPokemonsPagedAsync(page);
-                Console.WriteLine(JsonSerializer.Serialize(pokemons));
-                Console.WriteLine($"\nPage {page + 1}");
-                Console.Write("\nShow next page? [Y,n] ");
-                shouldContinue = new YesOrNo(Console.ReadLine()).GetValue();
-                page++;
-            } while (shouldContinue);
+            Console.Clear();
+            Console.WriteLine($"{selectedPokemon} adopted!");
+            Console.WriteLine(@"
+                              ████                              
+                            ██░░░░██                            
+                          ██░░░░░░░░██                          
+                          ██░░░░░░░░██                          
+                        ██░░░░░░░░░░░░██                        
+                        ██░░░░░░░░░░░░██                        
+                        ██░░░░░░░░░░░░██                        
+                          ██░░░░░░░░██                          
+                            ████████                            ");
         }
 
         private async Task ShowPokemonInfoAsync(string? pokemonSelected)
@@ -129,6 +136,7 @@ namespace service
             var pokemonName = new PokemonOption(pokemonSelected).GetValue();
             var pokemon = await _pokemonService.GetPokemonAsync(pokemonName);
             Console.Clear();
+            Console.WriteLine($"---------------------- INFO ABOUT {pokemon.Name.ToUpper()} ----------------------");
             Console.WriteLine($"Name: {pokemon.Name}");
             Console.WriteLine($"Height: {pokemon.Height}");
             Console.WriteLine($"Weight: {pokemon.Weight}");
@@ -136,6 +144,26 @@ namespace service
             foreach (var abilityData in pokemon.Abilities)
                 Console.WriteLine($" {abilityData.Ability.Name}");
         }
-    }
 
+        private static int ShowMenuAndGetUserOption(string title, string description, Dictionary<int, string> options)
+        {
+            Console.WriteLine($"---------------------- {title.ToUpper()} ----------------------");
+            Console.WriteLine($"\n{description}\n");
+
+            foreach (var option in options)
+                Console.WriteLine($"{option.Key} - {option.Value}");
+
+            Console.Write("\nOption: ");
+
+            var selectedOption = Console.ReadLine();
+
+            if (!int.TryParse(selectedOption, out var parsedSelectedOption))
+                throw new Exception("Invalid input");
+
+            if (!options.ContainsKey(parsedSelectedOption))
+                throw new Exception("Option not available :(");
+
+                return parsedSelectedOption;
+        }
+    }
 }

@@ -18,25 +18,34 @@ namespace ui
                 Console.Clear();
                 UiService.ShowGameName();
                 _uiService.GetUserName();
-                var selectedOption = _uiService.MainMenuOptions();
-                switch (selectedOption)
-                {
-                    case 1:
-                        await _uiService.AdoptPokemon();
-                        break;
-                    case 2:
-                        _uiService.ShowAdoptedPokemons();
-                        break;
-                    case 3:
-                        break;
-                    default:
-                        Console.WriteLine("Invalid option");
-                        break;
-                }
+                Console.Clear();
+                await ShowOptions();
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+            }
+        }
+
+        private async Task ShowOptions()
+        {
+            var selectedOption = _uiService.MainMenuOptions();
+            switch (selectedOption)
+            {
+                case 1:
+                    await _uiService.AdoptAPokemon();
+                    await ShowOptions();
+                    break;
+                case 2:
+                    Console.Clear();
+                    _uiService.ShowAdoptedPokemons();
+                    await ShowOptions();
+                    break;
+                case 3:
+                    break;
+                default:
+                    Console.WriteLine("Invalid option");
+                    break;
             }
         }
     }
