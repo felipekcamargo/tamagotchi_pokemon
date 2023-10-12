@@ -1,17 +1,15 @@
 using System.Text.RegularExpressions;
 
-namespace contracts.ConsoleOptions
+namespace contracts
 {
     class MainMenuOptions
     {
         private int SelectedOption { get; set; }
         public static readonly Dictionary<int, string> availableOptions = new()
         {
-            {1, "Show all Pokémons available"},
-            {2, "Pokemon info"},
-            {3, "Adopt a Pokémon"},
-            {4, "Show all adopted Pokémons"},
-            {5, "Exit" }
+            {1, "Adopt a Pokémon"},
+            {2, "Show all adopted Pokémons"},
+            {3, "Exit" }
         };
 
         public MainMenuOptions(string? selectedOption)

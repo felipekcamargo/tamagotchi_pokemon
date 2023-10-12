@@ -1,4 +1,4 @@
-namespace contracts.Pokemon
+namespace contracts
 {
     public class Pokemon
     {

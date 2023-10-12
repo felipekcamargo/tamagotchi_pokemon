@@ -1,8 +1,7 @@
 using System.Net.Http.Json;
-using contracts.Pokemons;
-using contracts.Pokemon;
+using contracts;
 
-namespace client.PokemonClient
+namespace client
 {
     public interface IPokemonClient
     {
