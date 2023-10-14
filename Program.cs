@@ -1,4 +1,4 @@
-﻿using ui;
+﻿using Controller;
 
 namespace Main
 {
@@ -6,7 +6,7 @@ namespace Main
     {
         public static async Task Main(string[] args)
         {
-            var TamagotchiPokemon = new TamagotchiPokemon();
+            var TamagotchiPokemon = new TamagotchiController();
             await TamagotchiPokemon.MainMenu();
         }
     }

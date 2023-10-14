@@ -1,7 +1,7 @@
 using System.Net.Http.Json;
-using contracts;
+using Model;
 
-namespace client
+namespace Client
 {
     public interface IPokemonClient
     {

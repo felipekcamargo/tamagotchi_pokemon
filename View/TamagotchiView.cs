@@ -1,25 +1,28 @@
-using client;
-using contracts;
-using static contracts.MainMenuOptions;
+using Client;
+using Model;
+using Service;
 
-namespace service
+namespace View
 {
 
-    public interface IUiService
+    public interface ITamagotchiView
     {
         public void GetUserName();
-        public int MainMenuOptions();
-        public Task AdoptAPokemon();
-        public void ShowAdoptedPokemons();
+        public void ShowGameName();
+        public void MainMenuOptions();
+        public void ShowAdoptedPokemons(List<string> adoptedPokemons);
+        public void ShowAvailablePokemons(Dictionary<int,string> options);
+        public void ShowPokemonInfoAsync(Pokemon pokemon);
+        public void AdoptedPokemonMessage(string selectedPokemon);
+        public void AdoptionOptions(string pokemonName);
     }
 
-    class UiService : IUiService
+    class TamagotchiView : ITamagotchiView
     {
         private readonly IPokemonService _pokemonService;
         private string _userName = string.Empty;
-        private List<string> _adoptedPokemons = new();
 
-        public UiService()
+        public TamagotchiView()
         {
             _pokemonService = new PokemonService(new PokemonClient());
         }
@@ -30,14 +33,19 @@ namespace service
             _userName = Console.ReadLine();
         }
 
-        public int MainMenuOptions()
+        public void MainMenuOptions()
         {
-            var selectedOption = new MainMenuOptions(ShowMenuAndGetUserOption("Menu", $"{_userName}, what you want to do?", availableOptions));
+            var availableOptions = new Dictionary<int, string>()
+            {
+                {1, "Adopt a Pokémon"},
+                {2, "Show all adopted Pokémons"},
+                {3, "Exit" }
+            };
 
-            return selectedOption.GetValue();
+            PrintOptionsFromDictionary("Menu", $"{_userName}, what you want to do?", availableOptions);
         }
 
-        public static void ShowGameName()
+        public void ShowGameName()
         {
             Console.WriteLine(@" _____                                         _          _      _  ______         _                                    
 |_   _|                                       | |        | |    (_) | ___ \       | |                                   
@@ -50,15 +58,12 @@ namespace service
 ");
         }
 
-        public async Task AdoptAPokemon()
+        public void ShowAvailablePokemons(Dictionary<int,string> options)
         {
-            var availablePokemons = await GetAvailablePokemons();
-            var selectedPokemon = ShowMenuAndGetUserOption("Adopt a Pokémon", "Select a Pokémon:", availablePokemons);
-            var selectedPokemonName = availablePokemons[selectedPokemon];
-            await AdoptionOptions(selectedPokemonName);
+            PrintOptionsFromDictionary("Adopt a Pokémon", "Select a Pokémon:", options);
         }
 
-        private async Task AdoptionOptions(string pokemonName)
+        public void AdoptionOptions(string pokemonName)
         {
             var adoptionOptions = new Dictionary<int, string>{
                 {1,$"More info about {pokemonName}"},
@@ -66,56 +71,27 @@ namespace service
                 {3,"Back"},
             };
 
-            var selectedOption = ShowMenuAndGetUserOption(
+            PrintOptionsFromDictionary(
                 "Adoption Options",
                 $"{_userName}, what you want to do?",
                 adoptionOptions
             );
-
-            switch (selectedOption)
-            {
-                case 1:
-                    await ShowPokemonInfoAsync(pokemonName);
-                    await AdoptionOptions(pokemonName);
-                    break;
-                case 2:
-                    AdoptedPokemonMessage(pokemonName);
-                    _adoptedPokemons.Add(pokemonName);
-                    break;
-                case 3:
-                    break;
-            }
         }
 
-        private async Task<Dictionary<int, string>> GetAvailablePokemons()
+        public void ShowAdoptedPokemons(List<string> adoptedPokemons)
         {
-            int randomPage = new Random().Next(63);
-            var pokemons = await _pokemonService.GetAllPokemonsPagedAsync(randomPage);
-            var pokemonsAvailable = new Dictionary<int, string>();
-
-            for (int index = 0; index < 3; index++)
-            {
-                int randomPokemon = new Random().Next(19);
-                pokemonsAvailable.Add(index + 1, pokemons!.Results![randomPokemon].Name!);
-            }
-
-            return pokemonsAvailable;
-        }
-
-        public void ShowAdoptedPokemons()
-        {
-            if (_adoptedPokemons.Count == 0){
+            if (adoptedPokemons.Count == 0){
                 Console.WriteLine("\n\nThere is no Pokémon adopted\n\n");
                 return;
             }
 
             Console.WriteLine("\n\n---------------------- ADOPTED A POKÉMONS ----------------------\n\n");
-            foreach (var pokemon in _adoptedPokemons)
+            foreach (var pokemon in adoptedPokemons)
                 Console.WriteLine(pokemon);
             
         }
 
-        private static void AdoptedPokemonMessage(string selectedPokemon)
+        public void AdoptedPokemonMessage(string selectedPokemon)
         {
             Console.Clear();
             Console.WriteLine($"{selectedPokemon} adopted!");
@@ -131,10 +107,8 @@ namespace service
                             ████████                            ");
         }
 
-        private async Task ShowPokemonInfoAsync(string? pokemonSelected)
+        public void ShowPokemonInfoAsync(Pokemon pokemon)
         {
-            var pokemonName = new PokemonOption(pokemonSelected).GetValue();
-            var pokemon = await _pokemonService.GetPokemonAsync(pokemonName);
             Console.Clear();
             Console.WriteLine($"---------------------- INFO ABOUT {pokemon.Name.ToUpper()} ----------------------");
             Console.WriteLine($"Name: {pokemon.Name}");
@@ -145,7 +119,7 @@ namespace service
                 Console.WriteLine($" {abilityData.Ability.Name}");
         }
 
-        private static int ShowMenuAndGetUserOption(string title, string description, Dictionary<int, string> options)
+        private static void PrintOptionsFromDictionary(string title, string description, Dictionary<int, string> options)
         {
             Console.WriteLine($"---------------------- {title.ToUpper()} ----------------------");
             Console.WriteLine($"\n{description}\n");
@@ -154,16 +128,6 @@ namespace service
                 Console.WriteLine($"{option.Key} - {option.Value}");
 
             Console.Write("\nOption: ");
-
-            var selectedOption = Console.ReadLine();
-
-            if (!int.TryParse(selectedOption, out var parsedSelectedOption))
-                throw new Exception("Invalid input");
-
-            if (!options.ContainsKey(parsedSelectedOption))
-                throw new Exception("Option not available :(");
-
-                return parsedSelectedOption;
         }
     }
 }

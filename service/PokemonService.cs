@@ -1,7 +1,7 @@
-using client;
-using contracts;
+using Client;
+using Model;
 
-namespace service
+namespace Service
 {
     public interface IPokemonService {
         Task<Pokemons?> GetAllPokemonsPagedAsync(int page = 0);

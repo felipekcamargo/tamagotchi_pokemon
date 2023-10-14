@@ -1,36 +1,10 @@
 using System.Text.RegularExpressions;
 
-namespace contracts
+namespace Model
 {
-    class MainMenuOptions
-    {
-        private int SelectedOption { get; set; }
-        public static readonly Dictionary<int, string> availableOptions = new()
-        {
-            {1, "Adopt a Pokémon"},
-            {2, "Show all adopted Pokémons"},
-            {3, "Exit" }
-        };
-
-        public MainMenuOptions(int selectedOption)
-        {
-            ValidateOptions(selectedOption);
-            SelectedOption = selectedOption;
-        }
-
-        public int GetValue() => SelectedOption;
-
-        private void ValidateOptions(int parsedSelectedOption)
-        {
-            if (!availableOptions.ContainsKey(parsedSelectedOption))
-                throw new Exception("Option not supported");
-        }
-
-    }
-
     class PokemonOption
     {
-        private string _nameOrId;
+        private readonly string _nameOrId;
         public PokemonOption(string? nameOrId)
         {
             ValidateInput(nameOrId);
