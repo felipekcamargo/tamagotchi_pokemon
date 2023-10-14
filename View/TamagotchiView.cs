@@ -1,10 +1,7 @@
-using Client;
 using Model;
-using Service;
 
 namespace View
 {
-
     public interface ITamagotchiView
     {
         public void GetUserName();
@@ -19,13 +16,7 @@ namespace View
 
     class TamagotchiView : ITamagotchiView
     {
-        private readonly IPokemonService _pokemonService;
         private string _userName = string.Empty;
-
-        public TamagotchiView()
-        {
-            _pokemonService = new PokemonService(new PokemonClient());
-        }
 
         public void GetUserName()
         {
